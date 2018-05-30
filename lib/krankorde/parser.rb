@@ -38,6 +38,7 @@ module Krankorde
                 tok = @tokenizer.token
                 return nil if (tok.nil? || tok == :semi_colon)
                 node = tok.is_identifier? ? parse_assignment : parse_expression
+                return nil if node == nil
                 if @tokenizer.is_next_an? :semi_colon
                     return AST::Statement.new(node)
                 else
@@ -88,7 +89,12 @@ module Krankorde
                 return nil if tok.nil?
                 if tok.type == :operator && tok.value == '+' || tok.value == '-'
                     @tokenizer.get_next
-                    return AST::Unary.new(tok, parse_atom)
+                    return AST::Unary.new(tok, parse_factor)
+                elsif tok.type == :lparen
+                    @tokenizer.get_next
+                    expr = parse_expression
+                    show_error "Unmatched closing ')'!" unless @tokenizer.is_next_an? :rparen
+                    return expr
                 elsif tok.type == :number || tok.type == :identifier
                     return parse_atom
                 elsif tok == nil || tok.type == :semi_colon
@@ -98,6 +104,7 @@ module Krankorde
                 end
             end
 
+            # <atom> ::= ID | NUM
             def parse_atom
                 tok = @tokenizer.token
                 if tok.is_identifier?
