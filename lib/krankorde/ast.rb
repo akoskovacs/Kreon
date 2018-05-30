@@ -29,7 +29,7 @@ module Krankorde
             end
 
             def to_s
-                return "(#{class_name} (#{@statements.map(&:to_s).join ','}))"
+                return "(#{class_name} #{@statements.map(&:to_s).join ','})"
             end
         end
 
