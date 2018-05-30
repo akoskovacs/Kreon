@@ -2,12 +2,21 @@ module Krankorde
     module AST
         class Node
             def class_name
-                self.class.name.split("::").last
+                Rainbow(self.class.name.split("::").last).color(:purple)
+            end
+
+            def to_tree_s(level)
+               return tree_level(level) + "()" 
             end
 
             def to_s
-               return "()" 
+                to_tree_s(0)
             end
+
+            protected 
+                def tree_level(level = 0)
+                    return " "*2*level
+                end
         end
 
         class Statement < Node
@@ -17,8 +26,8 @@ module Krankorde
               @statement = stmt
             end
 
-            def to_s
-                return "(#{class_name} #{@statement})"
+            def to_tree_s(level)
+               return "(#{class_name}\n#{tree_level(level+1)}#{@statement})"
             end
         end
 
@@ -28,8 +37,13 @@ module Krankorde
               @statements = stmts
             end
 
-            def to_s
-                return "(#{class_name} #{@statements.map(&:to_s).join ','})"
+            def to_tree_s(level)
+                lev = "\n" + tree_level(level + 1)
+                stmts = @statements.map do |st|
+                    st.to_tree_s(level+1)
+                end.join(lev)
+
+                return "(#{class_name}#{lev}#{stmts})"
             end
         end
 
@@ -55,8 +69,8 @@ module Krankorde
                 @right = right
             end
 
-            def to_s
-                return "(#{class_name} #{@operator} #{@right})"
+            def to_tree_s(level)
+                return "(#{class_name} #{@operator} #{@right.to_tree_s(level+1)})"
             end
         end
 
@@ -68,8 +82,12 @@ module Krankorde
                 @left = left
             end
 
-            def to_s
-                return "(#{class_name} #{@operator} #{@left} #{@right})"
+            def to_tree_s(level)
+                nlevel = level + 1
+                lev = "\n" + tree_level(nlevel+2)
+                return "(#{class_name} #{@operator}" +
+                       "#{lev}#{@left.to_tree_s(nlevel+1)}" +
+                       "#{lev}#{@right.to_tree_s(nlevel+1)})"
             end
         end
 
@@ -80,7 +98,8 @@ module Krankorde
                 @number = num
             end
 
-            def to_s
+            def to_tree_s(level)
+                #spaces = tree_level(level+1)
                 return "(#{class_name} #{@number})"                
             end
         end
@@ -92,8 +111,9 @@ module Krankorde
                 @identifier = ident
             end
 
-            def to_s
-                return "(#{class_name} #{@identifier})"                
+            def to_tree_s(level)
+                spaces = tree_level(level+1)
+                return "#{spaces}(#{class_name} #{@identifier})"                
             end
         end
     end

@@ -3,6 +3,12 @@ module Krankorde
         attr_accessor :type
         attr_accessor :value
         attr_accessor :index
+        VALUE_COLORS = {
+            string: :green,
+            identifier: :navyblue,
+            number: :yellow,
+            operator: :cyan
+        }
 
         def initialize(type = :none, value = nil, index = nil)
             @type = type
@@ -30,9 +36,10 @@ module Krankorde
         end
 
         def to_s
-            s = "[#{@type}"
-            s += ", #{@value}" unless @value.nil?
-            s += ", #{@index}" unless @index.nil?
+            color = VALUE_COLORS[@type] || :azure
+            s = "[#{Rainbow(@type).color(:maroon)}"
+            s += ", #{Rainbow(@value).color(color)}" unless @value.nil?
+            s += ", #{Rainbow(@index).color(:darkblue)}" unless @index.nil?
             return s + "]"
         end
     end

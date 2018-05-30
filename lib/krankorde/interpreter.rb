@@ -14,8 +14,6 @@ module Krankorde
 
         def eval_statements root
             last = nil
-            #puts "in statements"
-            #puts root.statements.inspect
             root.statements.each do |stmt|
                 last = eval_statement(stmt)
             end
@@ -30,7 +28,7 @@ module Krankorde
             left = eval_ast(root.left)
             right = eval_ast(root.right)
             if left == nil || right == nil
-                puts "error nil"
+                puts "No value for one of the subexpressions!"
             end
             val = (case root.operator.value
             when "+" then left + right
