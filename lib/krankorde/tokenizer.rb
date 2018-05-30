@@ -3,6 +3,8 @@ module Krankorde
         SCAN_REGEX = /(\d+)|(\w[\d\w]+)|([\+\-\*\/]|>|<|>=|<=|==)|("[^"]*")|(=)|(;)|(,)|(\()|(\))|(\{)|(\})/
         TOKEN_ID = [:number, :identifier, :operator, :string, :assign, :semi_colon, :comma, 
                     :lparen, :rparen, :lbrace, :rbrace]
+        
+        attr_reader :tokens
 
         def initialize(source, source_name = nil)
             @source = source
@@ -35,54 +37,63 @@ module Krankorde
                     @tokens << tok
                 end
             end
-           return @tokens
+            # Make it end eventually...
+            @tokens << nil
+            return @tokens
         end
 
+        # @return [Symbol]
         def peek_next
-            return nil if (@index + 1) >= @tokens.length
-            return @tokens[@index + 1]
+            return @tokens.at(@index + 1)
         end
 
+        # @return [Symbol]
         def peek_prev
-            return nil if (@index - 1) < 0 
-            return @tokens[@index - 1] 
+            return nil if @index <= 0
+            return @tokens.at(@index - 1)
         end
 
+        # @return [Symbol]
         def get_next
             tok = peek_next
             @index += 1
             return tok
         end
 
+        # @return [Symbol]
         def get_prev
            tok = peek_prev 
            @index -= 1
            return tok
         end
 
+        # @return [[Symbol]]
         def token
-            tok = @tokens[@index]
-            #puts "tok: #{tok}, index: #{@index}"
-            return tok
+            return @tokens.at(@index)
         end
 
+        # @return [Bool]
         def is_next_an? expected_type
-            tok = get_next
-            if tok != nil && tok.type == expected_type
-                get_next
-                return true
-            end
-            get_prev
+            get_next # must make it current
+            return true if is_current_an? expected_type
+            get_prev # revert
             return false
         end
 
+        alias is_next_a? is_next_an?
+
+        # @return [Bool]
         def is_next_an_operator? *oprs
-            return is_next_an?(:operator) && token.is_operator?(oprs)
+            if is_next_an?(:operator) 
+                return true if token.is_operator?(*oprs)
+                get_prev
+            end
+            return false
         end
 
+        # @return [Bool]
         def is_current_an? expected_type
-            tok = token
-            return tok != nil && tok.type == expected_type
+            return token != nil && token.type == expected_type
         end
     end
 

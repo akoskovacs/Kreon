@@ -24,7 +24,6 @@ module Krankorde
 
         class Statements < Statement
             attr_accessor :statements
-
             def initialize(stmts = [])
               @statements = stmts
             end

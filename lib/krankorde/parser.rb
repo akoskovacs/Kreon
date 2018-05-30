@@ -1,4 +1,6 @@
 module Krankorde
+    attr_reader :parse_errors
+
     class Parser
         def initialize(tokenizer)
             @tokenizer = tokenizer
@@ -17,6 +19,7 @@ module Krankorde
                 clname = caller.first[/`(.*)'/, 1]
                 str = "#{clname}: #{err}"
                 @parse_errors << str
+                return nil
             end
 
             def parse_statements
@@ -33,17 +36,13 @@ module Krankorde
             #             |   ID '=' <expr> ';'
             def parse_statement
                 tok = @tokenizer.token
-                return nil if tok.nil?
-                node = nil
-                if tok.is_identifier?
-                    node = parse_assignment
+                return nil if (tok.nil? || tok == :semi_colon)
+                node = tok.is_identifier? ? parse_assignment : parse_expression
+                if @tokenizer.is_next_an? :semi_colon
+                    return AST::Statement.new(node)
                 else
-                    node = parse_expression
+                    return show_error "Expected ';' at the end."
                 end
-                unless @tokenizer.is_next_an? :semi_colon
-                    show_error "Expected ';' at the end."
-                end
-                return AST::Statement.new(node)
             end
 
             def parse_assignment
@@ -53,10 +52,11 @@ module Krankorde
             # <expr> ::= <term> { ('+' | '-') <term> }
             def parse_expression
                 first = parse_term
-                #puts "parse_expression", first
                 return nil if first.nil?
+                #@tokenizer.get_prev
                 while @tokenizer.is_next_an_operator? '+', '-'
                     optok = @tokenizer.token
+                    #puts "expr, optok: #{optok}"
                     @tokenizer.get_next
                     second = parse_term
                     break if second.nil? 
@@ -72,6 +72,7 @@ module Krankorde
                 return nil if first.nil?
                 while @tokenizer.is_next_an_operator? '*', '/'
                     optok = @tokenizer.token
+                    #puts "term, optok: #{optok}"
                     @tokenizer.get_next
                     second = parse_factor
                     break if second.nil? 
@@ -90,6 +91,8 @@ module Krankorde
                     return AST::Unary.new(tok, parse_atom)
                 elsif tok.type == :number || tok.type == :identifier
                     return parse_atom
+                elsif tok == nil || tok.type == :semi_colon
+                    return nil
                 else
                     show_error "Unknown token #{tok}!"
                 end
@@ -101,10 +104,11 @@ module Krankorde
                     return AST::Identifier.new(tok)
                 elsif tok.is_number?
                     return AST::Number.new(tok)
+                elsif tok.nil?
+                    return nil
                 else
                     show_error "Unknown atom #{tok}!"
                 end
-                return nil
             end
     end
 end

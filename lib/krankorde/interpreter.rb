@@ -17,6 +17,7 @@ module Krankorde
                 line = Readline::readline @prompt
                 break if line == "quit" || line == "exit" || line == nil
                 tokenizer = Tokenizer.new(line)
+                puts tokenizer.tokens
                 parser = Parser.new(tokenizer)
                 puts parser.parse
             end

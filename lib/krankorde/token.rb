@@ -7,13 +7,14 @@ module Krankorde
         def initialize(type = :none, value = nil, index = nil)
             @type = type
             @value = value
+            @index = index
         end
 
         def is_operator? *op
-            if op == nil || op == []
-                return @type == :operator
-            end
-            return @type == :operator && op.include?(@value)
+            is_op = @type == :operator
+
+            return is_op if (op.nil? || op == [])
+            return is_op && op.include?(@value)
         end
 
         def is_number?
