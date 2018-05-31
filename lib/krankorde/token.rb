@@ -23,6 +23,10 @@ module Krankorde
             return is_op && op.include?(@value)
         end
 
+        def is_type? type
+            return @type == type
+        end
+
         def is_number?
             return @type == :number
         end

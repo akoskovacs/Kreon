@@ -5,6 +5,7 @@ module Krankorde
         def initialize(prompt = "> ")
             show_copyright
             @prompt = prompt
+            @variable = {}
         end
 
         def show_copyright
@@ -37,6 +38,7 @@ module Krankorde
             when "/" then left / right
             else
                 puts "No binary operator '#{root.operator}'!"
+                0;
             end)
             return val
         end
@@ -48,17 +50,33 @@ module Krankorde
             return right
         end
 
+        def eval_assignment root
+            id = root.assigned_to.identifier.value
+            puts id
+            expr = eval_ast(root.expression)
+            @variable[id] = expr
+            return expr
+        end
+
         def eval_ast(root)
             return nil if root == nil
             if root.instance_of?(AST::Number)
                 return root.number.value
+            elsif root.instance_of?(AST::Identifier)
+                id = root.identifier.value
+                unless @variable.include? id
+                    puts "Variable '#{id}' is not defined!"
+                end
+                return @variable[id]
             elsif root.instance_of?(AST::Unary)
                 return eval_unary(root)
             elsif root.instance_of?(AST::Binary)
                 return eval_binary(root)
+            elsif root.instance_of?(AST::Assignment)
+                return eval_assignment(root)
             else
-                puts "#{root.class} is not implemented yet for evaulation"
-                return nil
+                puts "#{root.class} is not implemented yet for evaluation"
+                return 0
             end
         end
 
@@ -67,7 +85,7 @@ module Krankorde
                 line = Readline::readline @prompt
                 break if line == "quit" || line == "exit" || line == nil
                 tokenizer = Tokenizer.new(line)
-                puts tokenizer.tokens
+                puts tokenizer.tokenize
                 parser = Parser.new(tokenizer)
                 ast = parser.parse
                 puts ast

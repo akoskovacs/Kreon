@@ -6,7 +6,7 @@ module Krankorde
             end
 
             def to_tree_s(level)
-               return tree_level(level) + "()" 
+               return "()" 
             end
 
             def to_s
@@ -48,12 +48,18 @@ module Krankorde
         end
 
         class Assignment < Statement
-            attr_accessor :assignee
+            attr_accessor :assigned_to
             attr_accessor :expression
 
             def initialize(assigned_to, expr)
-                @assignee = assigned_to
+                @assigned_to = assigned_to
                 @expression = expr
+            end
+
+            def to_tree_s(level)
+                next_level = level + 1
+                lev = "\n" + tree_level(next_level + 2)
+                return "(#{class_name} #{@assigned_to}#{lev}#{@expression.to_tree_s(next_level+2)})"
             end
         end
 
@@ -112,8 +118,7 @@ module Krankorde
             end
 
             def to_tree_s(level)
-                spaces = tree_level(level+1)
-                return "#{spaces}(#{class_name} #{@identifier})"                
+                return "(#{class_name} #{@identifier})"                
             end
         end
     end

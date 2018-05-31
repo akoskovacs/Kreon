@@ -47,7 +47,26 @@ module Krankorde
             end
 
             def parse_assignment
-                return nil
+                ftok = @tokenizer.token
+                stok = @tokenizer.peek_next
+                #puts ftok, stok
+                if ftok.is_type?(:identifier) && stok.is_type?(:assign)
+                    atom = parse_atom
+                    #puts atom
+                    stok = @tokenizer.get_next
+                    unless stok.is_type?(:assign)
+                        return show_error "Expected '=' for assignment!"
+                    end
+                    @tokenizer.get_next
+                    expr = parse_expression
+                    if expr != nil
+                        return AST::Assignment.new(atom, expr)
+                    else
+                        show_error "Expected expression after '=' for assignment!"
+                        return atom
+                    end
+                end
+                return parse_expression
             end
 
             # <expr> ::= <term> { ('+' | '-') <term> }

@@ -1,6 +1,6 @@
 module Krankorde
     class Tokenizer
-        SCAN_REGEX = /(\d+)|(\w[\d\w]+)|([\+\-\*\/]|>|<|>=|<=|==)|("[^"]*")|(=)|(;)|(,)|(\()|(\))|(\{)|(\})/
+        SCAN_REGEX = /(\d+)|(\w[\d\w]*)|([\+\-\*\/]|>|<|>=|<=|==)|("[^"]*")|(=)|(;)|(,)|(\()|(\))|(\{)|(\})/
         TOKEN_ID = [:number, :identifier, :operator, :string, :assign, :semi_colon, :comma, 
                     :lparen, :rparen, :lbrace, :rbrace]
         
