@@ -90,6 +90,7 @@ module Krankorde
                 parser = Parser.new(tokenizer)
                 ast = parser.parse
                 puts ast.to_pretty_ast
+                #puts ast.to_pretty_syntax
                 ast_ev = eval_statements(ast) || "<nil>"
                 puts " => #{ast_ev}"
                 #draw_graph('/tmp/ast.png', ast)

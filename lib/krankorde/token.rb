@@ -39,10 +39,16 @@ module Krankorde
             return @type == :string
         end
 
-        def to_s
+        def to_pretty_value
             color = VALUE_COLORS[@type] || :azure
+            str = ""
+            str = Rainbow(@value).color(color) unless @value.nil?
+            return str
+        end
+
+        def to_s
             s = "[#{Rainbow(@type).color(:maroon)}"
-            s += ", #{Rainbow(@value).color(color)}" unless @value.nil?
+            s += ", #{to_pretty_value}" unless @value.nil?
             s += ", #{Rainbow(@index).color(:darkblue)}" unless @index.nil?
             return s + "]"
         end
