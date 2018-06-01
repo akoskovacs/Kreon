@@ -4,19 +4,6 @@ module Krankorde
             def class_name
                 Rainbow(Helpers::FormatHelper.class_name(self.class)).color(:purple)
             end
-
-            def to_tree_s(level)
-               return "()" 
-            end
-
-            def to_s
-                to_tree_s(0)
-            end
-
-            protected 
-                def tree_level(level = 0)
-                    return " "*2*level
-                end
         end
 
         class Statement < Node
@@ -24,10 +11,6 @@ module Krankorde
 
             def initialize(stmt = [])
               @statement = stmt
-            end
-
-            def to_tree_s(level)
-               return "(#{class_name}\n#{tree_level(level+1)}#{@statement})"
             end
         end
 
@@ -38,12 +21,6 @@ module Krankorde
             end
 
             def to_tree_s(level)
-                lev = "\n" + tree_level(level + 1)
-                stmts = @statements.map do |st|
-                    st.to_tree_s(level+1)
-                end.join(lev)
-
-                return "(#{class_name}#{lev}#{stmts})"
             end
         end
 
@@ -56,12 +33,6 @@ module Krankorde
                 @assigned_to = assigned_to
                 @expression = expr
                 @assignment = assign_token
-            end
-
-            def to_tree_s(level)
-                next_level = level + 1
-                lev = "\n" + tree_level(next_level + 2)
-                return "(#{class_name} #{@assigned_to}#{lev}#{@expression.to_tree_s(next_level+2)})"
             end
         end
 
@@ -76,10 +47,6 @@ module Krankorde
                 @operator = operator
                 @right = right
             end
-
-            def to_tree_s(level)
-                return "(#{class_name} #{@operator} #{@right.to_tree_s(level+1)})"
-            end
         end
 
         class Binary < Unary
@@ -89,14 +56,6 @@ module Krankorde
                 super(operator, right)
                 @left = left
             end
-
-            def to_tree_s(level)
-                nlevel = level + 1
-                lev = "\n" + tree_level(nlevel+2)
-                return "(#{class_name} #{@operator}" +
-                       "#{lev}#{@left.to_tree_s(nlevel+1)}" +
-                       "#{lev}#{@right.to_tree_s(nlevel+1)})"
-            end
         end
 
         class Number < Node
@@ -105,11 +64,6 @@ module Krankorde
             def initialize(num)
                 @number = num
             end
-
-            def to_tree_s(level)
-                #spaces = tree_level(level+1)
-                return "(#{class_name} #{@number})"                
-            end
         end
 
         class Identifier < Node
@@ -117,10 +71,6 @@ module Krankorde
 
             def initialize(ident)
                 @identifier = ident
-            end
-
-            def to_tree_s(level)
-                return "(#{class_name} #{@identifier})"                
             end
         end
     end

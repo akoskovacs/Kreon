@@ -28,8 +28,9 @@ module Krankorde
         def eval_binary root
             left = eval_ast(root.left)
             right = eval_ast(root.right)
-            if left == nil || right == nil
+            if left.nil? || right.nil?
                 puts "No value for one of the subexpressions!"
+                return 0
             end
             val = (case root.operator.value
             when "+" then left + right
@@ -52,7 +53,6 @@ module Krankorde
 
         def eval_assignment root
             id = root.assigned_to.identifier.value
-            puts id
             expr = eval_ast(root.expression)
             @variable[id] = expr
             return expr
@@ -80,6 +80,7 @@ module Krankorde
             end
         end
 
+        using AST::PrettyPrintVisitor
         def interpret
             loop do
                 line = Readline::readline @prompt
@@ -88,7 +89,7 @@ module Krankorde
                 puts tokenizer.tokenize
                 parser = Parser.new(tokenizer)
                 ast = parser.parse
-                puts ast
+                puts ast.to_pretty_ast
                 ast_ev = eval_statements(ast) || "<nil>"
                 puts " => #{ast_ev}"
                 #draw_graph('/tmp/ast.png', ast)

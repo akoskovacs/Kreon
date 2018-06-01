@@ -50,7 +50,7 @@ module Krankorde
                 ftok = @tokenizer.token
                 stok = @tokenizer.peek_next
                 #puts ftok, stok
-                if ftok.is_type?(:identifier) && stok.is_type?(:assign)
+                if ftok.is_type?(:identifier) && stok&.is_type?(:assign)
                     atom = parse_atom
                     #puts atom
                     stok = @tokenizer.get_next
