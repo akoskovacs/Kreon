@@ -1,29 +1,4 @@
 module Krankorde
-#    class GraphVisitor < AST::BaseVisitor
-#        attr_accessor :graph
-#
-#        def initialize(graph)
-#          @graph = graph
-#        end
-#
-#        def visit_number(node)
-#           puts "visited a number" 
-#        end
-#
-#        def visit_binary(node)
-#           puts "visited a binary expression" 
-#        end
-#
-#        def visit_statements(node)
-#           puts "visited some statements" 
-#        end
-#
-#        def visit_statement(node)
-#           puts "visited one specific statement" 
-#        end
-#    end
-
-
     class Interpreter
         attr_accessor :prompt
 
