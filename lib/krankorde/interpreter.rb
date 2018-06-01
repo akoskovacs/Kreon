@@ -1,4 +1,29 @@
 module Krankorde
+#    class GraphVisitor < AST::BaseVisitor
+#        attr_accessor :graph
+#
+#        def initialize(graph)
+#          @graph = graph
+#        end
+#
+#        def visit_number(node)
+#           puts "visited a number" 
+#        end
+#
+#        def visit_binary(node)
+#           puts "visited a binary expression" 
+#        end
+#
+#        def visit_statements(node)
+#           puts "visited some statements" 
+#        end
+#
+#        def visit_statement(node)
+#           puts "visited one specific statement" 
+#        end
+#    end
+
+
     class Interpreter
         attr_accessor :prompt
 
@@ -91,9 +116,19 @@ module Krankorde
                 puts ast
                 ast_ev = eval_statements(ast) || "<nil>"
                 puts " => #{ast_ev}"
+                #draw_graph('/tmp/ast.png', ast)
             end
             puts
             puts "Bye and have a nice day!"
+        end
+
+        using GraphVisitor
+        def draw_graph file_name, ast
+            gviz = GraphViz.new(:G, type: :digraph)
+            Rainbow.enabled = false
+            ast.draw_graph(gviz)
+            Rainbow.enabled = true
+            gviz.output(png: file_name)
         end
     end
 end

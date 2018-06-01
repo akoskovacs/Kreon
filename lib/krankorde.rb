@@ -1,9 +1,12 @@
 require "readline"
 require "rainbow"
+require "graphviz"
 
+require "krankorde/helpers"
+require "krankorde/ast"
 require "krankorde/token"
 require "krankorde/tokenizer"
+require "krankorde/graph_visitor"
 require "krankorde/interpreter"
-require "krankorde/ast"
 require "krankorde/parser"
 require "krankorde/version"

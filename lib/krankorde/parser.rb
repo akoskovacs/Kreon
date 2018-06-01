@@ -60,7 +60,7 @@ module Krankorde
                     @tokenizer.get_next
                     expr = parse_expression
                     if expr != nil
-                        return AST::Assignment.new(atom, expr)
+                        return AST::Assignment.new(stok, atom, expr)
                     else
                         show_error "Expected expression after '=' for assignment!"
                         return atom

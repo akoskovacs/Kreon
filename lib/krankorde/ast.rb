@@ -2,7 +2,7 @@ module Krankorde
     module AST
         class Node
             def class_name
-                Rainbow(self.class.name.split("::").last).color(:purple)
+                Rainbow(Helpers::FormatHelper.class_name(self.class)).color(:purple)
             end
 
             def to_tree_s(level)
@@ -50,10 +50,12 @@ module Krankorde
         class Assignment < Statement
             attr_accessor :assigned_to
             attr_accessor :expression
+            attr_accessor :assignment
 
-            def initialize(assigned_to, expr)
+            def initialize(assign_token, assigned_to, expr)
                 @assigned_to = assigned_to
                 @expression = expr
+                @assignment = assign_token
             end
 
             def to_tree_s(level)
