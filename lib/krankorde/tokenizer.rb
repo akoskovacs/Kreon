@@ -1,8 +1,18 @@
 module Krankorde
     class Tokenizer
-        SCAN_REGEX = /(\d+)|(\w[\d\w]*)|([\+\-\*\/]|>|<|>=|<=|==)|("[^"]*")|(=)|(;)|(,)|(\()|(\))|(\{)|(\})/
-        TOKEN_ID = [:number, :identifier, :operator, :string, :assign, :semi_colon, :comma, 
-                    :lparen, :rparen, :lbrace, :rbrace]
+        PATTERNS = {
+            number: /(\d+)/,
+            identifier: /(\w[\d\w]*)/,
+            operator: /([\+\-\*\/]|>|<|>=|<=|==)/,
+            string: /("[^"]*")/,
+            assign: /(=)/,
+            semi_colon: /(;)/,
+            comma: /(,)/,
+            lparen: /(\()/,
+            rparen: /(\))/,
+            lbrace: /(\{)/,
+            rbrace: /(\})/
+        }
         
         attr_reader :tokens
 
@@ -17,14 +27,20 @@ module Krankorde
 
         def tokenize
            return [] if @source.nil?
+           # Order matters
+           token_id = PATTERNS.keys
+           # Create a oneline regex with all sub-regexes in alternation
+           regex = Regexp.new(token_id.map do |name|
+            PATTERNS[name].source
+           end.join('|'))
 
-           @scan = @source.scan SCAN_REGEX
+           @scan = @source.scan regex
            #puts @scan.inspect
            cindex = 0
            @scan.each do |scan_elem|
                 scan_elem.each_with_index do |match, ind|
                     next if match.nil?
-                    tokid = TOKEN_ID[ind]
+                    tokid = token_id[ind]
                     value = nil
                     case tokid
                     when :number then
@@ -32,7 +48,7 @@ module Krankorde
                     when :identifier, :operator, :string then
                         value = match
                     end
-                    tok = Token.new(TOKEN_ID[ind], value, cindex)
+                    tok = Token.new(token_id[ind], value, cindex)
                     cindex += match.length
                     @tokens << tok
                 end
