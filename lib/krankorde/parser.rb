@@ -40,6 +40,7 @@ module Krankorde
                 node = tok.is_identifier? ? parse_assignment : parse_expression
                 return nil if node == nil
                 if @tokenizer.is_next_an? :semi_colon
+                    @tokenizer.get_next
                     return AST::Statement.new(node)
                 else
                     return show_error "Expected ';' at the end."

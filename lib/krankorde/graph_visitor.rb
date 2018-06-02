@@ -52,13 +52,10 @@ module Krankorde
 
         refine AST::Statements do
             def draw_graph(graph)
-                node = nil
+                node = graph.add_nodes(class_name)
                 @statements.each do |stmt|
                     new_node = stmt.draw_graph(graph)
-                    unless new_node.nil?
-                        graph.add_edges(node, new_node) unless node.nil?
-                        node = new_node
-                    end
+                    graph.add_edges(node, new_node) unless node.nil?
                 end
                 return node
             end
