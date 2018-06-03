@@ -1,17 +1,17 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "krankorde/version"
+require "kreon/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "krankorde"
-  spec.version       = Krankorde::VERSION
+  spec.name          = "kreon"
+  spec.version       = Kreon::VERSION
   spec.authors       = ["Ákos Kovács"]
   spec.email         = ["akoskovacs0@gmail.com"]
 
-  spec.summary       = %q{Compiler for the Krankorde language}
-  spec.description   = %q{Command-line compiler for Krankorde}
-  spec.homepage      = "http://gitlab.com/akoskovacs/krankorde"
+  spec.summary       = %q{Compiler for the Kreon language}
+  spec.description   = %q{Command-line compiler for Kreon}
+  spec.homepage      = "http://gitlab.com/akoskovacs/kreon"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.

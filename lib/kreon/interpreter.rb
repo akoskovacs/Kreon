@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     class Interpreter
         attr_accessor :prompt
 
@@ -9,7 +9,7 @@ module Krankorde
         end
 
         def show_copyright
-            puts "Krankorde (C) Ákos Kovács - 2018"
+            puts "Kreon (C) Ákos Kovács - 2018"
             puts
         end
 
@@ -135,7 +135,7 @@ module Krankorde
                 #puts ast.to_pretty_syntax
                 ast_ev = eval_statements(ast) || "<nil>"
                 puts " => #{ast_ev}"
-                draw_graph('/tmp/ast.png', ast)
+                #draw_graph('/tmp/ast.png', ast)
             end
             puts
             puts "Bye and have a nice day!"

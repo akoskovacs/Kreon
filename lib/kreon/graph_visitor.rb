@@ -1,5 +1,5 @@
 
-module Krankorde
+module Kreon
     module GraphVisitor
         refine AST::Leaf do
             def draw_graph(graph)

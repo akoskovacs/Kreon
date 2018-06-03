@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     module AST
         # Pretty-prints the AST to the console
         module PrettyPrintVisitor

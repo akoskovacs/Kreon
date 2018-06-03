@@ -1,0 +1,13 @@
+require "readline"
+require "rainbow"
+require "graphviz"
+
+require "kreon/helpers"
+require "kreon/ast"
+require "kreon/token"
+require "kreon/tokenizer"
+require "kreon/ast_printer"
+require "kreon/graph_visitor"
+require "kreon/interpreter"
+require "kreon/parser"
+require "kreon/version"

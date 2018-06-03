@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     module AST
         class Node
             def class_name

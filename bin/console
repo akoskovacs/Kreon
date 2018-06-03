@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
-require "krankorde"
-#require "../lib/krankorde.rb"
+require "kreon"
+#require "../lib/kreon.rb"
 
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
@@ -13,5 +13,5 @@ require "krankorde"
 
 #require "irb"
 #IRB.start(__FILE__)
-iptr = Krankorde::Interpreter.new
+iptr = Kreon::Interpreter.new
 iptr.interpret

@@ -1,5 +1,5 @@
 
-module Krankorde
+module Kreon
     module Helpers
         module FormatHelper
             extend self

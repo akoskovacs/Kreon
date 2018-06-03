@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     class Tokenizer
         PATTERNS = {
             true: /(\btrue\b)/,

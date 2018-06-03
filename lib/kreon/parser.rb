@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     attr_reader :parse_errors
 
     class Parser

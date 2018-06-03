@@ -1,4 +1,4 @@
-module Krankorde
+module Kreon
     class Token
         attr_accessor :type
         attr_accessor :value
