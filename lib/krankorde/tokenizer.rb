@@ -1,9 +1,12 @@
 module Krankorde
     class Tokenizer
         PATTERNS = {
+            true: /(\btrue\b)/,
+            false: /(\bfalse\b)/,
+            null: /(null)/,
             number: /(\d+)/,
             identifier: /(\w[\d\w]*)/,
-            operator: /([\+\-\*\/]|>|<|>=|<=|==)/,
+            operator: /([\+\-\*\/]|\|\||\&\&|>|<|>=|<=|==)/,
             string: /("[^"]*")/,
             assign: /(=)/,
             semi_colon: /(;)/,

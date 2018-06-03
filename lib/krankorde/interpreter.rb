@@ -37,6 +37,8 @@ module Krankorde
             when "-" then left - right
             when "*" then left * right
             when "/" then left / right
+            when "||" then (left!=0 || right!=0) ? 1 : 0
+            when "&&" then (left!=0 && right!=0) ? 1 : 0
             else
                 puts "No binary operator '#{root.operator}'!"
                 0;
@@ -74,6 +76,10 @@ module Krankorde
                 return eval_binary(root)
             elsif root.instance_of?(AST::Assignment)
                 return eval_assignment(root)
+            elsif root.instance_of?(AST::BoolConst)
+                return root.token.type == :false ? 0 : 1
+            elsif root.instance_of?(AST::Null)
+                return 0
             else
                 puts "#{root.class} is not implemented yet for evaluation"
                 return 0

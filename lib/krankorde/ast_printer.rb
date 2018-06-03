@@ -4,7 +4,7 @@ module Krankorde
         module PrettyPrintVisitor
             refine AST::Number do
                 def to_pretty_ast(_level = 0)
-                    return "(#{class_name} #{@number.to_s})"                
+                    return "(#{class_name} #{@number.to_s})"
                 end
 
                 def to_pretty_syntax(_level = 0)
@@ -12,9 +12,19 @@ module Krankorde
                 end
             end
 
+            refine AST::Basic do
+                def to_pretty_ast(_level = 0)
+                    return "(#{class_name} #{@token.to_s})"
+                end
+
+                def to_pretty_syntax(_level = 0)
+                    return @token.to_pretty_value
+                end
+            end
+
             refine AST::Identifier do
                 def to_pretty_ast(_level = 0)
-                    return "(#{class_name} #{@identifier.to_s})"                
+                    return "(#{class_name} #{@identifier.to_s})"
                 end
 
                 def to_pretty_syntax(_level = 0)

@@ -7,6 +7,9 @@ module Krankorde
             string: :green,
             identifier: :navyblue,
             number: :yellow,
+            null: :darkgray,
+            true: :yellow,
+            false: :yellow,
             operator: :cyan
         }
 
@@ -28,15 +31,35 @@ module Krankorde
         end
 
         def is_number?
-            return @type == :number
+            return is_type?(:number)
         end
 
         def is_identifier?
-            return @type == :identifier
+            return is_type?(:identifier)
         end
 
         def is_string?
-            return @type == :string
+            return is_type?(:string)
+        end
+
+        def is_boolean?
+            return is_true? || is_false?
+        end
+
+        def is_true?
+            return is_type?(:true)
+        end
+
+        def is_false?
+            return is_type?(:false)
+        end
+
+        def is_null?
+            return is_type?(:null)
+        end
+
+        def is_atom?
+            return is_number? || is_identifier? || is_boolean? || is_null?
         end
 
         def to_pretty_value

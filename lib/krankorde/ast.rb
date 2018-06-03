@@ -73,5 +73,18 @@ module Krankorde
                 @identifier = ident
             end
         end
+
+        class Basic < Node
+            attr_accessor :token
+            def initialize(tok)
+                @token = tok
+            end
+        end
+
+        class Null < Basic
+        end
+
+        class BoolConst < Basic
+        end
     end
 end

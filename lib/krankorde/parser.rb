@@ -70,36 +70,43 @@ module Krankorde
                 return parse_expression
             end
 
-            # <expr> ::= <term> { ('+' | '-') <term> }
-            def parse_expression
-                first = parse_term
+            def parse_binary_operator(*oprs, &next_parser)
+                first = next_parser.call()
                 return nil if first.nil?
                 #@tokenizer.get_prev
-                while @tokenizer.is_next_an_operator? '+', '-'
+                while @tokenizer.is_next_an_operator? *oprs
                     optok = @tokenizer.token
                     #puts "expr, optok: #{optok}"
                     @tokenizer.get_next
-                    second = parse_term
+                    second = next_parser.call()
                     break if second.nil? 
                     first = AST::Binary.new(optok, first, second)
                 end
                 return first
             end
 
+            def parse_expression
+                return parse_or_expression
+            end
+
+            # <or_expr> ::= <and_term> { '||' <and_expr> }
+            def parse_or_expression
+                return parse_binary_operator('||') { parse_and_expression }
+            end
+
+            # <and_expr> ::= <add_expr> { '||' <add_expr> }
+            def parse_and_expression
+                return parse_binary_operator('&&') { parse_addition_expression }
+            end
+
+            # <add_expr> ::= <term> { ('+' | '-') <term> }
+            def parse_addition_expression
+                return parse_binary_operator('+', '-') { parse_term }
+            end
+
             # <term> ::= <factor> { ('*' | '/') <factor> }
             def parse_term
-                first = parse_factor
-                #puts "parse_term", first
-                return nil if first.nil?
-                while @tokenizer.is_next_an_operator? '*', '/'
-                    optok = @tokenizer.token
-                    #puts "term, optok: #{optok}"
-                    @tokenizer.get_next
-                    second = parse_factor
-                    break if second.nil? 
-                    first = AST::Binary.new(optok, first, second)
-                end
-                return first
+                return parse_binary_operator('*', '/') { parse_factor }
             end
 
             # <factor> ::= ['+', '-'] <atom>
@@ -115,7 +122,7 @@ module Krankorde
                     expr = parse_expression
                     show_error "Unmatched closing ')'!" unless @tokenizer.is_next_an? :rparen
                     return expr
-                elsif tok.type == :number || tok.type == :identifier
+                elsif tok.is_atom?
                     return parse_atom
                 elsif tok == nil || tok.type == :semi_colon
                     return nil
@@ -131,6 +138,12 @@ module Krankorde
                     return AST::Identifier.new(tok)
                 elsif tok.is_number?
                     return AST::Number.new(tok)
+                elsif tok.is_number?
+                    return AST::Number.new(tok)
+                elsif tok.is_boolean?
+                    return AST::BoolConst.new(tok)
+                elsif tok.is_null?
+                    return AST::Null.new(tok)
                 elsif tok.nil?
                     return nil
                 else
