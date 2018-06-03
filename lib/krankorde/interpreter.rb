@@ -39,6 +39,12 @@ module Krankorde
             when "/" then left / right
             when "||" then (left!=0 || right!=0) ? 1 : 0
             when "&&" then (left!=0 && right!=0) ? 1 : 0
+            when "<" then (left < right) ? 1 : 0
+            when ">" then (left > right) ? 1 : 0
+            when "<=" then (left <= right) ? 1 : 0
+            when ">=" then (left >= right) ? 1 : 0
+            when "==" then (left == right) ? 1 : 0
+            when "!=" then (left != right) ? 1 : 0
             else
                 puts "No binary operator '#{root.operator}'!"
                 0;
@@ -47,8 +53,10 @@ module Krankorde
         end
         def eval_unary root
             right = eval_ast(root.right)
-            if root.operator.value == '-'
+            if root.operator.is_operator? '-'
                 return -right
+            elsif root.operator.is_operator? '!'
+                return right == 0 ? 1 : 0;
             end
             return right
         end

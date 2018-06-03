@@ -96,7 +96,19 @@ module Krankorde
 
             # <and_expr> ::= <add_expr> { '||' <add_expr> }
             def parse_and_expression
-                return parse_binary_operator('&&') { parse_addition_expression }
+                return parse_binary_operator('&&') { parse_relational }
+            end
+
+            # <rel> ::= <rel_eq> { ( '<', '>', '<=', '>=' ) <rel_eq> }
+            def parse_relational
+                return parse_binary_operator('<', '>', '<=', '>=') {
+                    parse_relational_eq
+                }
+            end
+
+            # <rel_eq> ::= <add_expr> { ( '==', '!=' ) <add_expr> }
+            def parse_relational_eq
+                return parse_binary_operator('==', '!=') { parse_addition_expression }
             end
 
             # <add_expr> ::= <term> { ('+' | '-') <term> }
@@ -114,7 +126,7 @@ module Krankorde
             def parse_factor
                 tok = @tokenizer.token
                 return nil if tok.nil?
-                if tok.type == :operator && tok.value == '+' || tok.value == '-'
+                if @tokenizer.is_current_an_operator? '+', '-', '!'
                     @tokenizer.get_next
                     return AST::Unary.new(tok, parse_factor)
                 elsif tok.type == :lparen

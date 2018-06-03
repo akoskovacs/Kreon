@@ -6,7 +6,7 @@ module Krankorde
             null: /(null)/,
             number: /(\d+)/,
             identifier: /(\w[\d\w]*)/,
-            operator: /([\+\-\*\/]|\|\||\&\&|>|<|>=|<=|==)/,
+            operator: /(\|\||\&\&|>|<|>=|<=|==|!=|[\+\-\*\/!])/,
             string: /("[^"]*")/,
             assign: /(=)/,
             semi_colon: /(;)/,
@@ -32,6 +32,7 @@ module Krankorde
            return [] if @source.nil?
            # Order matters
            token_id = PATTERNS.keys
+           #puts token_id.inspect
            # Create a oneline regex with all sub-regexes in alternation
            regex = Regexp.new(token_id.map do |name|
             PATTERNS[name].source
@@ -113,6 +114,11 @@ module Krankorde
         # @return [Bool]
         def is_current_an? expected_type
             return token != nil && token.type == expected_type
+        end
+
+        # @return [Bool]
+        def is_current_an_operator? *oprs
+            return token != nil && token.is_operator?(*oprs)
         end
     end
 
