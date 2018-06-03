@@ -1,15 +1,9 @@
 
 module Krankorde
     module GraphVisitor
-        refine AST::Number do
+        refine AST::Leaf do
             def draw_graph(graph)
-                return graph.add_nodes(@number.to_s)
-            end
-        end
-
-        refine AST::Identifier do
-            def draw_graph(graph)
-                return graph.add_nodes(@identifier.to_s)
+                return graph.add_nodes(@token.to_s)
             end
         end
 
@@ -17,7 +11,7 @@ module Krankorde
             def draw_graph(graph)
                 left = @left&.draw_graph(graph)
                 right = @right&.draw_graph(graph)
-                op = graph.add_nodes(@operator.to_s)
+                op = graph.add_nodes("(#{class_name} #{@operator.to_s})")
                 graph.add_edges(op, left) unless left.nil?
                 graph.add_edges(op, right) unless right.nil?
                 return op
@@ -27,7 +21,7 @@ module Krankorde
         refine AST::Unary do
             def draw_graph(graph)
                 left = @left&.draw_graph(graph)
-                op = graph.add_nodes(@operator.to_s)
+                op = graph.add_nodes("(#{class_name} #{@operator.to_s})")
                 graph.add_edges(op, left) unless left.nil?
                 return op
             end
@@ -52,7 +46,7 @@ module Krankorde
 
         refine AST::Statements do
             def draw_graph(graph)
-                node = graph.add_nodes(class_name)
+                node = graph.add_nodes("(#{class_name} #{hash.to_s[-5..-1]})")
                 @statements.each do |stmt|
                     new_node = stmt.draw_graph(graph)
                     graph.add_edges(node, new_node) unless node.nil?
@@ -60,5 +54,30 @@ module Krankorde
                 return node
             end
         end
+
+        refine AST::If do
+            def draw_graph(graph)
+                cond = @condition&.draw_graph(graph)
+                ifst = @statements&.draw_graph(graph)
+                elsest = @else_statements&.draw_graph(graph)
+                stmt = graph.add_nodes("(#{class_name} #{@token.to_s})")
+                graph.add_edges(stmt, cond) unless cond.nil?
+                graph.add_edges(stmt, ifst) unless ifst.nil?
+                graph.add_edges(stmt, elsest) unless elsest.nil?
+                return stmt
+            end
+        end
+
+        refine AST::While do
+            def draw_graph(graph)
+                cond = @condition&.draw_graph(graph)
+                stmts = @statements&.draw_graph(graph)
+                stmt = graph.add_nodes("(#{class_name} #{@token.to_s})")
+                graph.add_edges(stmt, cond) unless cond.nil?
+                graph.add_edges(stmt, stmts) unless stmts.nil?
+                return stmt
+            end
+        end
+
     end
 end

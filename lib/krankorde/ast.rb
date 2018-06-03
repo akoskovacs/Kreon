@@ -19,8 +19,28 @@ module Krankorde
             def initialize(stmts = [])
               @statements = stmts
             end
+        end
 
-            def to_tree_s(level)
+        class If < Statements
+            attr_accessor :token
+            attr_accessor :condition
+            attr_accessor :else_statements
+
+            def initialize(tok, cond, stmts, else_stmts = nil)
+                @token = tok
+                @condition = cond
+                @statements = stmts
+                @else_statements = else_stmts
+            end
+        end
+
+        class While < Statements
+            attr_accessor :token
+            attr_accessor :condition
+            def initialize(tok, cond, stmts)
+                @token = tok
+                @condition = cond
+                @statements = stmts
             end
         end
 
@@ -58,33 +78,28 @@ module Krankorde
             end
         end
 
-        class Number < Node
-            attr_accessor :number
-
-            def initialize(num)
-                @number = num
-            end
-        end
-
-        class Identifier < Node
-            attr_accessor :identifier
-
-            def initialize(ident)
-                @identifier = ident
-            end
-        end
-
-        class Basic < Node
+        # Node containing just one token
+        class Leaf < Node
             attr_accessor :token
             def initialize(tok)
                 @token = tok
             end
+
+            def to_s
+                return "(#{class_name} #{@token.to_s})"
+            end
         end
 
-        class Null < Basic
+        class Number < Leaf
         end
 
-        class BoolConst < Basic
+        class Identifier < Leaf
+        end
+
+        class Null < Leaf
+        end
+
+        class BoolConst < Leaf
         end
     end
 end

@@ -25,6 +25,27 @@ module Krankorde
             return eval_ast(root.statement)
         end
 
+        def eval_if_statement root
+            cond = eval_ast(root.condition)
+            if cond != 0
+                puts "true: #{root.statements}"
+                return eval_ast(root.statements)
+            else
+                unless root.else_statements.nil?
+                    return eval_ast(root.else_statements)
+                end
+            end
+            return 0
+        end
+
+        def eval_while_statement root
+            expr = 0
+            while eval_ast(root.condition) != 0
+                expr = eval_ast(root.statements)
+            end
+            return expr
+        end
+
         def eval_binary root
             left = eval_ast(root.left)
             right = eval_ast(root.right)
@@ -51,6 +72,7 @@ module Krankorde
             end)
             return val
         end
+
         def eval_unary root
             right = eval_ast(root.right)
             if root.operator.is_operator? '-'
@@ -62,7 +84,7 @@ module Krankorde
         end
 
         def eval_assignment root
-            id = root.assigned_to.identifier.value
+            id = root.assigned_to.token.value
             expr = eval_ast(root.expression)
             @variable[id] = expr
             return expr
@@ -70,14 +92,20 @@ module Krankorde
 
         def eval_ast(root)
             return nil if root == nil
+            #puts root.inspect
             if root.instance_of?(AST::Number)
-                return root.number.value
+                return root.token.value
             elsif root.instance_of?(AST::Identifier)
-                id = root.identifier.value
+                id = root.token.value
                 unless @variable.include? id
                     puts "Variable '#{id}' is not defined!"
                 end
                 return @variable[id]
+            elsif root.instance_of?(AST::If)
+                puts "is an if"
+                return eval_if_statement(root)
+            elsif root.instance_of?(AST::While)
+                return eval_while_statement(root)
             elsif root.instance_of?(AST::Unary)
                 return eval_unary(root)
             elsif root.instance_of?(AST::Binary)
@@ -107,7 +135,7 @@ module Krankorde
                 #puts ast.to_pretty_syntax
                 ast_ev = eval_statements(ast) || "<nil>"
                 puts " => #{ast_ev}"
-                #draw_graph('/tmp/ast.png', ast)
+                draw_graph('/tmp/ast.png', ast)
             end
             puts
             puts "Bye and have a nice day!"

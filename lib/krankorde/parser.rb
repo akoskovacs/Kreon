@@ -22,6 +22,7 @@ module Krankorde
                 return nil
             end
 
+            # <stmts> ::= <stmt> | <stmt> <stmts>
             def parse_statements
                 stmts = []
                 loop do
@@ -29,15 +30,25 @@ module Krankorde
                     break if stmt.nil?
                     stmts << stmt
                 end
-                return AST::Statements.new stmts
+                return AST::Statements.new(stmts)
             end
 
-            # <statement> ::= <expr> ';'
-            #             |   ID '=' <expr> ';'
+            # <stmt> ::= <expr> ';'
+            #        |   ID '=' <expr> ';'
+            #        |   <if_stmt>
+            #        |   <while_stmt>
             def parse_statement
                 tok = @tokenizer.token
-                return nil if (tok.nil? || tok == :semi_colon)
-                node = tok.is_identifier? ? parse_assignment : parse_expression
+                #puts "stmt: #{tok}"
+                if tok == nil || tok.is_type?(:semi_colon) || tok.is_type?(:rbrace)
+                    return nil
+                elsif tok.is_type? :if
+                    return parse_if_statement
+                elsif tok.is_type? :while
+                    return parse_while_statement
+                else
+                    node = tok.is_identifier? ? parse_assignment : parse_expression
+                end
                 return nil if node == nil
                 if @tokenizer.is_next_an? :semi_colon
                     @tokenizer.get_next
@@ -45,6 +56,55 @@ module Krankorde
                 else
                     return show_error "Expected ';' at the end."
                 end
+            end
+
+            # <block> ::= '{' <stmts> '}'
+            def parse_block
+                tok = @tokenizer.token
+                unless tok.is_type? :lbrace
+                    return show_error "Expected '{' for the block statement!"
+                end
+                @tokenizer.get_next
+                #puts "block: #{@tokenizer.token.inspect}"
+                stmts = parse_statements
+                #puts "block_brace: #{@tokenizer.token}"
+                unless @tokenizer.is_current_an? :rbrace
+                    return show_error "Expected '}' for the block statement!"
+                end
+                return stmts
+            end
+
+            # <if_stmt> ::= 'if' <expr> <block> [ 'else' <block> ]
+            def parse_if_statement
+                if_tok = @tokenizer.token
+                unless if_tok.is_type? :if
+                    return show_error "Expected if keyword!"
+                end
+                @tokenizer.get_next
+                cond = parse_expression
+                @tokenizer.get_next
+                stmts = parse_block
+                if @tokenizer.is_next_an? :else
+                    @tokenizer.get_next
+                    estmts = parse_block
+                    return AST::If.new(if_tok, cond, stmts, estmts)
+                else
+                    return AST::If.new(if_tok, cond, stmts)
+                end
+            end
+
+            # <while_stmt> ::= 'while' <expr> <block>
+            def parse_while_statement
+                while_tok = @tokenizer.token
+                unless while_tok.is_type? :while
+                    return show_error "Expected while keyword!"
+                end
+                @tokenizer.get_next
+                #puts "while: #{@tokenizer.token}"
+                cond = parse_expression
+                @tokenizer.get_next
+                stmts = parse_block
+                return AST::While.new(while_tok, cond, stmts)
             end
 
             def parse_assignment
